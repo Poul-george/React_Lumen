@@ -1,0 +1,6 @@
+.div_item {
+  background: red;
+  display: inline-block;
+  width: 30%;
+  margin: 10px;
+}
