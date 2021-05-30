@@ -1,5 +1,5 @@
-import React from 'react';
 import axios from 'axios';
+import React from 'react';
 
 
 function PostUser(props) {
@@ -56,6 +56,17 @@ function PostUser(props) {
   }
 }
 
+function LogOut() {
+  if(!window.confirm('ログアウトしますか？')){
+    return;
+  } else {
+    window.sessionStorage.setItem(['user_log_id'],[""]);
+    window.confirm('ログアウトししました');
+    window.location = "http://localhost:3000/";
+    return;
+  }
+}
+
 
 //新規登録フォーム
 function SignUp(props) {
@@ -67,46 +78,59 @@ function SignUp(props) {
   headers.append('Access-Control-Allow-Origin', '*');
   fetchOption["headers"]= headers;
   // console.log(fetchOption);
-  return (
-    <div>
-      <h2>新規登録</h2>
+
+  if (window.sessionStorage.getItem(['user_log_id']) === "") {
+    return (
       <div>
-        <label className="formLavel">名前</label>
-        <input type="text" value={props.signup_name} onChange={props.addFormName}/>
+        <h2>新規登録</h2>
+        <div>
+          <label className="formLavel">名前</label>
+          <input type="text" value={props.signup_name} onChange={props.addFormName}/>
+        </div>
+        <div>
+          <label className="formLavel">password</label>
+          <input type="text" value={props.signup_password} onChange={props.addFormPassword}/>
+        </div>
+        <div>
+          <label className="formLavel">メールアドレス</label>
+          <input type="text" value={props.signup_email} onChange={props.addFormEmail}/>
+        </div>
+        <div>
+          <button type="submit" onClick={(e) => PostUser(props)}>signUp</button> 
+        </div>
       </div>
-      <div>
-        <label className="formLavel">password</label>
-        <input type="text" value={props.signup_password} onChange={props.addFormPassword}/>
-      </div>
-      <div>
-        <label className="formLavel">メールアドレス</label>
-        <input type="text" value={props.signup_email} onChange={props.addFormEmail}/>
-      </div>
-      <div>
-        <button type="submit" onClick={(e) => PostUser(props)}>signUp</button> 
-      </div>
-    </div>
-  );
+    );
+  } else {
+    return (
+      <button type="submit" onClick={(e) => LogOut()}>サインアウト</button> 
+    );
+  }
 }
 
 //ログインフォーム
   function SignIn(props) {
-    return (
-      <div>
-      <h2>サインイン</h2>
+    if (window.sessionStorage.getItem(['user_log_id']) === "") {
+      return (
         <div>
-          <label className="formLavel">ID</label>
-          <input type="text" value={props.login_id} onChange={props.addLoginId}/>
+        <h2>サインイン</h2>
+          <div>
+            <label className="formLavel">ID</label>
+            <input type="text" value={props.login_id} onChange={props.addLoginId}/>
+          </div>
+          <div>
+            <label className="formLavel">password</label>
+            <input type="text" value={props.login_password} onChange={props.addLoginPassword}/>
+          </div>
+          <div>
+            <button type="submit" onClick={(e) => props.LoginUser(props)}>login</button> 
+          </div>
         </div>
-        <div>
-          <label className="formLavel">password</label>
-          <input type="text" value={props.login_password} onChange={props.addLoginPassword}/>
-        </div>
-        <div>
-          <button type="submit">login</button> 
-        </div>
-      </div>
-    );
+      );
+    } else {
+      return (
+        <p>ログインしています</p>
+      );
+    }
   }
 
 
@@ -119,7 +143,8 @@ class UserLog extends React.Component {
       signup_password: "",
       signup_email: "",
       login_id: "",
-      login_password: ""
+      login_password: "",
+      user_get: []
     };
     this.addFormName = this.addFormName.bind(this);
     this.addFormPassword = this.addFormPassword.bind(this);
@@ -127,6 +152,38 @@ class UserLog extends React.Component {
 
     this.addLoginId = this.addLoginId.bind(this);
     this.addLoginPassword = this.addLoginPassword.bind(this);
+    this.LoginUser = this.LoginUser.bind(this);
+  }
+
+  LoginUser(props) {
+    const items = [props.login_id, props.login_password];
+    axios({
+      method : "POST",
+      url : "http://localhost/user_judge",
+      data : items
+    })
+    .then((response)=> {
+      const users = response.data;
+      console.log(users);
+
+      let login_user_num = 0;
+      for (let i = 0; i < users.length; i++) {
+        if (users[i].user_id === props.login_id) {
+          if (users[i].user_password === props.login_password) {
+            console.log(users[i].user_name);
+            console.log("がログインしました");
+            window.sessionStorage.setItem(['user_log_id'],[props.login_id]);
+            window.confirm('ログインしました。');
+            window.location = "http://localhost:3000/";
+            return
+          }
+        }
+      }
+    })
+    .catch((error)=> {
+      console.info(error);
+    });
+  
   }
 
   addFormName(e){
@@ -174,6 +231,7 @@ class UserLog extends React.Component {
 
           addLoginId={this.addLoginId}
           addLoginPassword={this.addLoginPassword}
+          LoginUser={this.LoginUser}
         />
       </div>
     )

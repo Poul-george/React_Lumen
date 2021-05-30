@@ -17,9 +17,14 @@ mb_internal_encoding("UTF-8");
 class UserController extends Controller
 {
   //ログイン画面表示
-  public function loginPage() {
+  public function loginPage(Request $request) {
     $users = User::all();
     return view('log_in', ["users" => $users]);
+  }
+  //ログイン画面表示
+  public function UserJudge(Request $request) {
+    $users = User::all();
+    return response()->json($users);
   }
 
   //ユーザー仮登録（新規登録）

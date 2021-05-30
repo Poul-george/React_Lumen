@@ -49,6 +49,7 @@ $router->post('/delete/{id}', 'PostController@exeDestroy');
 
 //ログイン画面
 $router->get('/sign_up', 'UserController@loginPage');
+$router->post('/user_judge', 'UserController@UserJudge');
 //ユーザー仮登録（新規登録）
 $router->post('/new_user', 'UserController@newUser');
 //ユーザー仮登録（メール送信）

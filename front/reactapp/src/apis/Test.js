@@ -9,13 +9,13 @@ var a = window.sessionStorage.getItem(['key1']);
 console.log(a);  
 
 function Test(props){
-  const l = useLocation(); // URL path や パラメータなど。JSのlocationと同じ
-  const p = useParams();     // URLのパスパラメータを取得。例えば、 /uses/2 なら、2の部分を取得
-  const h = useHistory();   // historyオブジェクトを取得。
+  // const l = useLocation(); // URL path や パラメータなど。JSのlocationと同じ
+  // const p = useParams();     // URLのパスパラメータを取得。例えば、 /uses/2 なら、2の部分を取得
+  // const h = useHistory();   // historyオブジェクトを取得。
   // console.log(props);
-  console.log(l.pathname);
-  console.log(p);
-  console.log(h);
+  // console.log(l.pathname);
+  // console.log(p);
+  // console.log(h);
 
   return(
     <div>
